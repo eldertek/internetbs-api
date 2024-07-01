@@ -23,7 +23,7 @@ pip install internetbs-api
 First, import the necessary classes:
 
 ```python
-from internetbs-api import Account, Domain, DNS, Forwarding, Host
+from internetbs import Account, Domain, DNS, Forwarding, Host
 ```
 
 Then, initialize the API with your credentials:
