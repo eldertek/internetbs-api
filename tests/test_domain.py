@@ -1,8 +1,7 @@
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../internetbs')))
 from domain import Domain
 
 domain = Domain('testapi', 'testpass', test_mode=True)
@@ -110,6 +109,120 @@ def run_test(test_number):
         print("Domain:", response.domain)
         print("Registry Status:", response.registrystatus)
         print("Status:", response.status)
+    elif test_number == 6:
+        print("(6) Testing Domain/InitiateTransfer")
+        contacts = {
+            'registrant': {'firstName': 'John', 'lastName': 'Doe', 'email': 'john.doe@pybs.com'}
+        }
+        response = domain.initiate_transfer('pybs.com', 'authcode123', contacts)
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 7:
+        print("(7) Testing Domain/RetryTransfer")
+        response = domain.retry_transfer('pybs.com')
+    elif test_number == 8:
+        print("(8) Testing Domain/CancelTransfer")
+        response = domain.cancel_transfer('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 9:
+        print("(9) Testing Domain/ResendTransferAuthEmail")
+        response = domain.resend_transfer_auth_email('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 10:
+        print("(10) Testing Domain/GetTransferHistory")
+        response = domain.get_transfer_history('pybs.com')
+        print("Status:", response['status'])
+        print("History:", response.get('history', ''))
+    elif test_number == 11:
+        print("(11) Testing Domain/ApproveTransferAway")
+        response = domain.approve_transfer_away('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 12:
+        print("(12) Testing Domain/RejectTransferAway")
+        response = domain.reject_transfer_away('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 13:
+        print("(13) Testing Domain/Trade")
+        contacts = {
+            'registrant': {'firstName': 'John', 'lastName': 'Doe', 'email': 'john.doe@pybs.com'}
+        }
+        response = domain.trade_domain('pybs.com', contacts)
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 14:
+        print("(14) Testing Domain/EnableRegistrarLock")
+        response = domain.enable_registrar_lock('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 15:
+        print("(15) Testing Domain/DisableRegistrarLock")
+        response = domain.disable_registrar_lock('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 16:
+        print("(16) Testing Domain/GetRegistrarLockStatus")
+        response = domain.get_registrar_lock_status('pybs.com')
+        print("Status:", response['status'])
+        print("Registrar Lock Status:", response.get('registrarlockstatus', ''))
+    elif test_number == 17:
+        print("(17) Testing Domain/EnablePrivateWhois")
+        response = domain.enable_private_whois('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 18:
+        print("(18) Testing Domain/DisablePrivateWhois")
+        response = domain.disable_private_whois('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 19:
+        print("(19) Testing Domain/GetPrivateWhoisStatus")
+        response = domain.get_private_whois_status('pybs.com')
+        print("Status:", response['status'])
+        print("Private WHOIS Status:", response.get('privatewhoisstatus', ''))
+    elif test_number == 20:
+        print("(20) Testing Domain/Push")
+        response = domain.push_domain('pybs.com', 'target_account')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 21:
+        print("(21) Testing Domain/ChangeTagUK")
+        response = domain.change_tag_uk('pybs.com', 'new_tag')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 22:
+        print("(22) Testing Domain/List")
+        response = domain.list_domains()
+        print("Status:", response['status'])
+        print("Domains:", response.get('domains', ''))
+    elif test_number == 23:
+        print("(23) Testing Domain/Renew")
+        response = domain.renew_domain('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 24:
+        print("(24) Testing Domain/Restore")
+        response = domain.restore_domain('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
+    elif test_number == 25:
+        print("(25) Testing Domain/Count")
+        response = domain.count_domains()
+        print("Status:", response['status'])
+        print("Count:", response.get('count', ''))
+    elif test_number == 26:
+        print("(26) Testing Domain/GetRegistrantVerificationInfo")
+        response = domain.get_registrant_verification_info('pybs.com')
+        print("Status:", response['status'])
+        print("Verification Info:", response.get('verificationinfo', ''))
+    elif test_number == 27:
+        print("(27) Testing Domain/StartRegistrantVerification")
+        response = domain.start_registrant_verification('pybs.com')
+        print("Status:", response['status'])
+        print("Message:", response.get('message', ''))
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
