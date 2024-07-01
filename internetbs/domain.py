@@ -64,9 +64,29 @@ class Domain:
         if discount_code:
             params['discountCode'] = discount_code
         
-        for contact_type, contact_fields in contacts.items():
-            for field, value in contact_fields.items():
-                params[f"{contact_type}_{field}"] = value
+        if domain_name.endswith('.com'):
+            # Only include the specified parameters for .com domains
+            allowed_contact_fields = ['firstName', 'lastName', 'organization', 'email', 'phoneNumber', 'street', 'street2', 'street3', 'city', 'countryCode', 'postalCode']
+            allowed_contact_types = ['registrant', 'admin', 'technical', 'billing']
+            for contact_type, contact_fields in contacts.items():
+                if contact_type in allowed_contact_types:
+                    for field, value in contact_fields.items():
+                        if field in allowed_contact_fields:
+                            params[f"{contact_type}_{field}"] = value
+        elif any(domain_name.endswith(tld) for tld in ['.fr', '.re', '.pm', '.tf', '.wf', '.yt']): 
+            # Only include the specified parameters for .fr domains
+            allowed_contact_fields = ['firstName', 'lastName', 'organization', 'email', 'phoneNumber', 'street', 'street2', 'street3', 'city', 'countryCode', 'postalCode', 'dotfrcontactentitytype']
+            allowed_contact_types = ['registrant', 'admin']
+            for contact_type, contact_fields in contacts.items():
+                if contact_type in allowed_contact_types:
+                    for field, value in contact_fields.items():
+                        if field in allowed_contact_fields:
+                            params[f"{contact_type}_{field}"] = value
+
+        else:
+            for contact_type, contact_fields in contacts.items():
+                for field, value in contact_fields.items():
+                    params[f"{contact_type}_{field}"] = value
         
         response_data = self._make_request('/Domain/Create', params)
         return DomainCreateResult(

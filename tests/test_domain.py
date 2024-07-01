@@ -26,11 +26,12 @@ def run_test(test_number):
                 'organization': 'PyBS Inc.',
                 'email': 'john.doe@pybs.com',
                 'phoneNumber': '+33.765151515',
+                'dotfrcontactentitytype': 'individual',
                 'street': '123 PyBS Street',
                 'street2': 'Suite 100',
                 'street3': '',
                 'city': 'PyCity',
-                'countryCode': 'US',
+                'countryCode': 'FR',
                 'postalCode': '12345'
             },
             'admin': {
@@ -42,7 +43,7 @@ def run_test(test_number):
                 'street2': 'Suite 100',
                 'street3': '',
                 'city': 'PyCity',
-                'countryCode': 'US',
+                'countryCode': 'FR',
                 'postalCode': '12345'
             },
             'technical': {
@@ -54,7 +55,7 @@ def run_test(test_number):
                 'street2': 'Suite 100',
                 'street3': '',
                 'city': 'PyCity',
-                'countryCode': 'US',
+                'countryCode': 'FR',
                 'postalCode': '12345'
             },
             'billing': {
@@ -66,11 +67,11 @@ def run_test(test_number):
                 'street2': 'Suite 100',
                 'street3': '',
                 'city': 'PyCity',
-                'countryCode': 'US',
+                'countryCode': 'FR',
                 'postalCode': '12345'
             }
         }
-        response = domain.create_domain('pybs.com', contacts)        
+        response = domain.create_domain('pyb1562s.fr', contacts)        
         print("Transaction ID:", response.transactid)
         print("Status:", response.status)
         print("Currency:", response.currency)
