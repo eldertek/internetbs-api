@@ -35,8 +35,10 @@ class DNS:
             status=response_data['status']
         )
 
-    def remove_record(self, domain_name, record_type, value):
-        params = {'FullRecordName': domain_name, 'Type': record_type, 'Value': value}
+    def remove_record(self, domain_name, record_type, value=None):
+        params = {'FullRecordName': domain_name, 'Type': record_type}
+        if value:
+            params['Value'] = value
         response_data = self._make_request('/Domain/DnsRecord/Remove', params)
         return DNSRemoveRecordResult(
             transactid=response_data['transactid'],
