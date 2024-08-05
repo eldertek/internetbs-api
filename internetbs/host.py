@@ -17,21 +17,22 @@ class Host:
         response = requests.get(url, params=params, verify=not self.test_mode)
         return response.json()
 
-    def create_host(self, host_name, ip_address):
-        params = {'HostName': host_name, 'IPAddress': ip_address}
+    def create_host(self, host_name, ip_addresses):
+        params = {'host': host_name, 'IP_List': ip_addresses}
         return self._make_request('/Domain/Host/Create', params)
 
     def get_host_info(self, host_name):
-        params = {'HostName': host_name}
+        params = {'Host': host_name}
         return self._make_request('/Domain/Host/Info', params)
 
-    def update_host(self, host_name, ip_address):
-        params = {'HostName': host_name, 'IPAddress': ip_address}
+    def update_host(self, host_name, ip_addresses):
+        params = {'host': host_name, 'IP_list': ip_addresses}
         return self._make_request('/Domain/Host/Update', params)
 
     def delete_host(self, host_name):
-        params = {'HostName': host_name}
+        params = {'host': host_name}
         return self._make_request('/Domain/Host/Delete', params)
 
-    def list_hosts(self):
-        return self._make_request('/Domain/Host/List', {})
+    def list_hosts(self, domain_name):
+        params = {'domain': domain_name}
+        return self._make_request('/Domain/Host/List', params)
