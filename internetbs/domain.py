@@ -1,6 +1,6 @@
 import requests
 import urllib3
-from results import GenericResult, DomainCheckResult, DomainCreateResult, DomainUpdateResult, DomainInfoResult, DomainRegistryStatusResult, DomainItem
+from .results import GenericResult, DomainCheckResult, DomainCreateResult, DomainUpdateResult, DomainInfoResult, DomainRegistryStatusResult, DomainItem
     
 class Domain:
     def __init__(self, api_key, password, test_mode=False):

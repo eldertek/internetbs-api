@@ -1,6 +1,6 @@
 import requests
 import urllib3
-from results import DNSAddRecordResult, DNSRemoveRecordResult, DNSUpdateRecordResult, DNSListRecordsResult
+from .results import GenericResult, DNSAddRecordResult, DNSRemoveRecordResult, DNSUpdateRecordResult, DNSListRecordsResult
 
 class DNS:
     def __init__(self, api_key, password, test_mode=False):
@@ -25,7 +25,7 @@ class DNS:
         # Error handling
         if response.status_code != 200 or response_data.get('status') != 'SUCCESS':
             error_message = response_data.get('message', 'Unknown error')
-            raise Exception(f"API request failed: {error_message}")
+            return GenericResult(transactid=None, status='ERROR', message=error_message), requested_url
         
         return response_data, requested_url
 
