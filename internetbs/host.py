@@ -6,9 +6,11 @@ class Host:
         self.password = password
         self.test_mode = test_mode
         self.base_url = "https://testapi.internet.bs" if test_mode else "https://api.internet.bs"
+        self.last_request_url = None
 
     def _make_request(self, resource_path, params):
         url = f"{self.base_url}{resource_path}"
+        self.last_request_url = url
         params.update({
             'ApiKey': 'testapi' if self.test_mode else self.api_key,
             'Password': 'testpass' if self.test_mode else self.password,
@@ -16,6 +18,9 @@ class Host:
         })
         response = requests.get(url, params=params, verify=not self.test_mode)
         return response.json()
+
+    def get_last_request_url(self):
+        return self.last_request_url
 
     def create_host(self, host_name, ip_addresses):
         params = {'host': host_name, 'IP_List': ip_addresses}

@@ -7,11 +7,13 @@ class DNS:
         self.password = password
         self.test_mode = test_mode
         self.base_url = "https://testapi.internet.bs" if test_mode else "https://api.internet.bs"
+        self.last_request_url = None
         if self.test_mode:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     def _make_request(self, resource_path, params):
         url = f"{self.base_url}{resource_path}"
+        self.last_request_url = url
         params.update({
             'ApiKey': 'testapi' if self.test_mode else self.api_key,
             'Password': 'testpass' if self.test_mode else self.password,
@@ -26,6 +28,9 @@ class DNS:
             raise Exception(f"API request failed: {error_message}")
         
         return response_data
+
+    def get_last_request_url(self):
+        return self.last_request_url
 
     def add_record(self, domain_name, record_type, value):
         params = {'FullRecordName': domain_name, 'Type': record_type, 'Value': value}
