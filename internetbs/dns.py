@@ -24,7 +24,7 @@ class DNS:
         
         # Error handling
         if response.status_code != 200 or response_data.get('status') != 'SUCCESS':
-            error_message = response_data.get('message', response)
+            error_message = response_data.get('message', response.content)
             raise Exception(f"API request failed: {error_message}")
         
         return response_data, requested_url
