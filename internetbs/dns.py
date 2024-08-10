@@ -1,5 +1,6 @@
 import requests
 import urllib3
+import urllib.parse
 
 class DNS:
     def __init__(self, api_key, password, test_mode=False):
@@ -8,12 +9,14 @@ class DNS:
         self.test_mode = test_mode
         self.base_url = "https://testapi.internet.bs" if test_mode else "https://api.internet.bs"
         self.last_request_url = None
+        self.last_request_params = None
         if self.test_mode:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     def _make_request(self, resource_path, params):
         url = f"{self.base_url}{resource_path}"
         self.last_request_url = url
+        self.last_request_params = params
         params.update({
             'ApiKey': 'testapi' if self.test_mode else self.api_key,
             'Password': 'testpass' if self.test_mode else self.password,
@@ -29,8 +32,11 @@ class DNS:
         
         return response_data
 
-    def get_last_request_url(self):
-        return self.last_request_url
+    def get_last_request_url(self, reveal=False):
+        if self.last_request_url and self.last_request_params:
+            params = {k: v for k, v in self.last_request_params.items() if not reveal and k in ['ApiKey', 'Password']}
+            return f"{self.last_request_url}?{urllib.parse.urlencode(params)}"
+        return None
 
     def add_record(self, domain_name, record_type, value):
         params = {'FullRecordName': domain_name, 'Type': record_type, 'Value': value}
