@@ -23,7 +23,7 @@ class DNS:
         response_data = response.json()
         
         # Error handling
-        if response.status_code != 200 or response_data.get('status') != 'SUCCESS' or response_data.get('status') != 'FAILURE':
+        if response.status_code != 200 or (response_data.get('status') != 'SUCCESS' and response_data.get('status') != 'FAILURE'):
             error_message = response_data.get('message', response.content)
             raise Exception(f"API request failed: {error_message}")
         
