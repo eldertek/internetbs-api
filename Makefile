@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 PYTHON=python3
 PKG_NAME=internetbs-api
-VERSION=1.0.2
+VERSION=1.0.3
 default: | clean check_tags bundle upload
 	@echo "Full service complete"
 

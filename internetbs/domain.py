@@ -1,7 +1,7 @@
 import requests
 import urllib3
-import urllib.parse
-
+from results import GenericResult, DomainCheckResult, DomainCreateResult, DomainUpdateResult, DomainInfoResult, DomainRegistryStatusResult, DomainItem
+    
 class Domain:
     def __init__(self, api_key, password, test_mode=False):
         self.api_key = api_key
@@ -49,8 +49,7 @@ class Domain:
             registrarlockallowed=response_data['registrarlockallowed'],
             privatewhoisallowed=response_data['privatewhoisallowed'],
             realtimeregistration=response_data['realtimeregistration'],
-            url=requested_url
-        )
+        ), requested_url
     
     def create_domain(self, domain_name, contacts, period="1Y", ns_list=None, transfer_auth_info=None, registrar_lock="ENABLED", auto_renew="NO", discount_code=None):
         params = {
@@ -98,8 +97,7 @@ class Domain:
             currency=response_data['currency'],
             price=response_data['price'],
             product=response_data['product'],
-            url=requested_url
-        )
+        ), requested_url
     
     def update_domain(self, domain_name, contacts=None, ns_list=None, transfer_auth_info=None, registrar_lock=None, auto_renew=None):
         params = {'Domain': domain_name}
@@ -122,8 +120,7 @@ class Domain:
             transactid=response_data['transactid'],
             status=response_data['status'],
             message=response_data.get('message', ''),
-            url=requested_url
-        )
+        ), requested_url
     
     def get_domain_info(self, domain_name):
         response_data, requested_url = self._make_request('/Domain/Info', {'Domain': domain_name})
@@ -143,8 +140,7 @@ class Domain:
             transferauthinfo=response_data['transferauthinfo'],
             dnssec=response_data['dnssec'],
             price=response_data['price'],
-            url=requested_url
-        )
+        ), requested_url
     
     def get_registry_status(self, domain_name):
         response_data, requested_url = self._make_request('/Domain/RegistryStatus', {'Domain': domain_name})
@@ -153,8 +149,7 @@ class Domain:
             domain=response_data['domain'],
             registrystatus=response_data['registrystatus'],
             status=response_data['status'],
-            url=requested_url
-        )
+        ), requested_url
     
     def initiate_transfer(self, domain_name, auth_code, contacts):
         params = {
@@ -165,25 +160,60 @@ class Domain:
             for field, value in contact_fields.items():
                 params[f"{contact_type}_{field}"] = value
         
-        return self._make_request('/Domain/Transfer/Initiate', params)
+        response_data, requested_url = self._make_request('/Domain/Transfer/Initiate', params)
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def retry_transfer(self, domain_name):
-        return self._make_request('/Domain/Transfer/Retry', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/Transfer/Retry', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def cancel_transfer(self, domain_name):
-        return self._make_request('/Domain/Transfer/Cancel', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/Transfer/Cancel', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def resend_transfer_auth_email(self, domain_name):
-        return self._make_request('/Domain/Transfer/ResendAuthEmail', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/Transfer/ResendAuthEmail', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def get_transfer_history(self, domain_name):
-        return self._make_request('/Domain/Transfer/History', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/Transfer/History', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def approve_transfer_away(self, domain_name):
-        return self._make_request('/Domain/TransferAway/Approve', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/TransferAway/Approve', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def reject_transfer_away(self, domain_name):
-        return self._make_request('/Domain/TransferAway/Reject', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/TransferAway/Reject', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def trade_domain(self, domain_name, contacts):
         params = {'Domain': domain_name}
@@ -191,126 +221,120 @@ class Domain:
             for field, value in contact_fields.items():
                 params[f"{contact_type}_{field}"] = value
         
-        return self._make_request('/Domain/Trade', params)
+        response_data, requested_url = self._make_request('/Domain/Trade', params)
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def enable_registrar_lock(self, domain_name):
-        return self._make_request('/Domain/RegistrarLock/Enable', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/RegistrarLock/Enable', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def disable_registrar_lock(self, domain_name):
-        return self._make_request('/Domain/RegistrarLock/Disable', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/RegistrarLock/Disable', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def get_registrar_lock_status(self, domain_name):
-        return self._make_request('/Domain/RegistrarLock/Status', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/RegistrarLock/Status', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def enable_private_whois(self, domain_name):
-        return self._make_request('/Domain/PrivateWhois/Enable', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/PrivateWhois/Enable', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def disable_private_whois(self, domain_name):
-        return self._make_request('/Domain/PrivateWhois/Disable', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/PrivateWhois/Disable', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def get_private_whois_status(self, domain_name):
-        return self._make_request('/Domain/PrivateWhois/Status', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/PrivateWhois/Status', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def push_domain(self, domain_name, target_account):
-        return self._make_request('/Domain/Push', {'Domain': domain_name, 'TargetAccount': target_account})
+        response_data, requested_url = self._make_request('/Domain/Push', {'Domain': domain_name, 'TargetAccount': target_account})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def change_tag_uk(self, domain_name, new_tag):
-        return self._make_request('/Domain/ChangeTag/DotUK', {'Domain': domain_name, 'NewTag': new_tag})
+        response_data, requested_url = self._make_request('/Domain/ChangeTag/DotUK', {'Domain': domain_name, 'NewTag': new_tag})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def list_domains(self, return_url=False):
         response_data, requested_url = self._make_request('/Domain/List', {})
         domain_names = response_data.get('domain', [])
-        return [DomainItem(domain_name) for domain_name in domain_names], requested_url if return_url else [DomainItem(domain_name) for domain_name in domain_names]
+        return [DomainItem(domain_name) for domain_name in domain_names], requested_url
     
     def renew_domain(self, domain_name, period="1Y"):
-        return self._make_request('/Domain/Renew', {'Domain': domain_name, 'Period': period})
+        response_data, requested_url = self._make_request('/Domain/Renew', {'Domain': domain_name, 'Period': period})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def restore_domain(self, domain_name):
-        return self._make_request('/Domain/Restore', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/Restore', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def count_domains(self):
-        return self._make_request('/Domain/Count', {})
+        response_data, requested_url = self._make_request('/Domain/Count', {})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def get_registrant_verification_info(self, domain_name):
-        return self._make_request('/Domain/RegistrantVerification/Info', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/RegistrantVerification/Info', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
     
     def start_registrant_verification(self, domain_name):
-        return self._make_request('/Domain/RegistrantVerification/Send', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/RegistrantVerification/Send', {'Domain': domain_name})
+        return GenericResult(
+            transactid=response_data['transactid'],
+            status=response_data['status'],
+            message=response_data.get('message', ''),
+        ), requested_url
 
 
-class DomainCheckResult:
-    def __init__(self, transactid, status, domain, minregperiod, maxregperiod, registrarlockallowed, privatewhoisallowed, realtimeregistration, url):
-        self.transactid = transactid
-        self.status = status
-        self.domain = domain
-        self.minregperiod = minregperiod
-        self.maxregperiod = maxregperiod
-        self.registrarlockallowed = registrarlockallowed
-        self.privatewhoisallowed = privatewhoisallowed
-        self.realtimeregistration = realtimeregistration
-        self.url = url
-
-    def __str__(self):
-        return f"DomainCheckResult(status={self.status}, domain={self.domain})"
-
-class DomainCreateResult:
-    def __init__(self, transactid, status, currency, price, product, url):
-        self.transactid = transactid
-        self.status = status
-        self.currency = currency
-        self.price = price
-        self.product = product
-        self.url = url
-
-    def __str__(self):
-        return f"DomainCreateResult(status={self.status}, currency={self.currency}, price={self.price}, product={self.product})"
-
-class DomainUpdateResult:
-    def __init__(self, transactid, status, message, url):
-        self.transactid = transactid
-        self.status = status
-        self.message = message
-        self.url = url
-
-    def __str__(self):
-        return f"DomainUpdateResult(status={self.status}, message={self.message})"
-
-class DomainInfoResult:
-    def __init__(self, transactid, status, domain, expirationdate, registrationdate, paiduntil, registrarlock, autorenew, privatewhois, whoisprivacy, domainstatus, contacts, transferauthinfo, dnssec, price, url):
-        self.transactid = transactid
-        self.status = status
-        self.domain = domain
-        self.expirationdate = expirationdate
-        self.registrationdate = registrationdate
-        self.paiduntil = paiduntil
-        self.registrarlock = registrarlock
-        self.autorenew = autorenew
-        self.privatewhois = privatewhois
-        self.whoisprivacy = whoisprivacy
-        self.domainstatus = domainstatus
-        self.contacts = contacts
-        self.transferauthinfo = transferauthinfo
-        self.dnssec = dnssec
-        self.price = price
-        self.url = url
-
-    def __str__(self):
-        return f"DomainInfoResult(status={self.status}, domain={self.domain})"
-
-class DomainRegistryStatusResult:
-    def __init__(self, transactid, domain, registrystatus, status, url):
-        self.transactid = transactid
-        self.domain = domain
-        self.registrystatus = registrystatus
-        self.status = status
-        self.url = url
-
-    def __str__(self):
-        return f"DomainRegistryStatusResult(status={self.status}, domain={self.domain}, registrystatus={self.registrystatus})"
-
-class DomainItem:
-    def __init__(self, domain_name):
-        self.domain_name = domain_name
-
-    def __str__(self):
-        return f"DomainItem(domain_name={self.domain_name})"

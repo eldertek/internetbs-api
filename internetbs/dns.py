@@ -1,6 +1,6 @@
 import requests
 import urllib3
-import urllib.parse
+from results import DNSAddRecordResult, DNSRemoveRecordResult, DNSUpdateRecordResult, DNSListRecordsResult
 
 class DNS:
     def __init__(self, api_key, password, test_mode=False):
@@ -35,8 +35,7 @@ class DNS:
         return DNSAddRecordResult(
             transactid=response_data['transactid'],
             status=response_data['status'],
-            url=requested_url
-        )
+        ), requested_url
 
     def remove_record(self, domain_name, record_type, value=None):
         params = {'FullRecordName': domain_name, 'Type': record_type}
@@ -46,8 +45,7 @@ class DNS:
         return DNSRemoveRecordResult(
             transactid=response_data['transactid'],
             status=response_data['status'],
-            url=requested_url
-        )
+        ), requested_url
 
     def update_record(self, domain_name, old_record_type, old_value, new_value):
         params = {
@@ -60,8 +58,7 @@ class DNS:
         return DNSUpdateRecordResult(
             transactid=response_data['transactid'],
             status=response_data['status'],
-            url=requested_url
-        )
+        ), requested_url
 
     def list_records(self, domain_name):
         params = {'Domain': domain_name}
@@ -70,42 +67,5 @@ class DNS:
             transactid=response_data['transactid'],
             status=response_data['status'],
             records=response_data['records'],
-            url=requested_url
-        )
+        ), requested_url
 
-class DNSAddRecordResult:
-    def __init__(self, transactid, status, url):
-        self.transactid = transactid
-        self.status = status
-        self.url = url
-
-    def __str__(self):
-        return f"DNSAddRecordResult(status={self.status}, transactid={self.transactid})"
-
-class DNSRemoveRecordResult:
-    def __init__(self, transactid, status, url):
-        self.transactid = transactid
-        self.status = status
-        self.url = url
-
-    def __str__(self):
-        return f"DNSRemoveRecordResult(status={self.status}, transactid={self.transactid})"
-
-class DNSUpdateRecordResult:
-    def __init__(self, transactid, status, url):
-        self.transactid = transactid
-        self.status = status
-        self.url = url
-
-    def __str__(self):
-        return f"DNSUpdateRecordResult(status={self.status}, transactid={self.transactid})"
-
-class DNSListRecordsResult:
-    def __init__(self, transactid, status, records, url):
-        self.transactid = transactid
-        self.status = status
-        self.records = records
-        self.url = url
-
-    def __str__(self):
-        return f"DNSListRecordsResult(status={self.status}, transactid={self.transactid}, records={self.records})"
