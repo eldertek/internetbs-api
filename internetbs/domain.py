@@ -25,16 +25,16 @@ class Domain:
         
         if response.status_code != 200:
             error_message = response_data.get('message', 'Unknown error occurred while processing the request')
-            raise Exception(f"API request failed: {error_message}")
+            raise Exception(f"API request failed: {error_message} - {requested_url}")
         
         if resource_path == '/Domain/Check':
             if response_data.get('status') not in ['AVAILABLE', 'UNAVAILABLE']:
                 error_message = response_data.get('message', 'Unknown error occurred while processing the request')
-                raise Exception(f"API request failed: {error_message}")
+                raise Exception(f"API request failed: {error_message} - {requested_url}")
         else:
             if response_data.get('status') != 'SUCCESS':
                 error_message = response_data.get('message', 'Unknown error occurred while processing the request')
-                raise Exception(f"API request failed: {error_message}")
+                raise Exception(f"API request failed: {error_message} - {requested_url}")
         
         return response_data, requested_url
 
@@ -102,7 +102,7 @@ class Domain:
     def update_domain(self, domain_name, contacts=None, ns_list=None, transfer_auth_info=None, registrar_lock=None, auto_renew=None):
         params = {'Domain': domain_name}
         if ns_list:
-            params['Ns_list'] = ns_list
+            params['Ns_list'] = ','.join(ns_list)
         if transfer_auth_info:
             params['transferAuthInfo'] = transfer_auth_info
         if registrar_lock:
@@ -336,5 +336,3 @@ class Domain:
             status=response_data['status'],
             message=response_data.get('message', ''),
         ), requested_url
-
-

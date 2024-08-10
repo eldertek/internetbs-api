@@ -12,7 +12,7 @@ def run_test(test_number):
             'firstName': 'John', 
             'lastName': 'Doe', 
             'organization': 'PyBS Inc.',
-            'email': 'john.doe@pybs.com',
+            'email': 'john.doe@gmail.com',
             'phoneNumber': '+33.765151515',
             'dotfrcontactentitytype': 'individual',
             'street': '123 PyBS Street',
@@ -63,7 +63,7 @@ def run_test(test_number):
     test_cases = [
         (1, "Domain/Check", lambda: domain.check_availability('pybs.fr')),
         (2, "Domain/Create", lambda: domain.create_domain('pyb1562s.fr', contacts)),
-        (3, "Domain/Update", lambda: domain.update_domain('pybs.com', contacts)),
+        (3, "Domain/Update", lambda: domain.update_domain('pybs.com', ns_list=['ns1.nicsell.com', 'ns2.nicsell.com'])),
         (4, "Domain/GetInfo", lambda: domain.get_domain_info('pybs.com')),
         (5, "Domain/GetRegistryStatus", lambda: domain.get_registry_status('pybs.com')),
         (6, "Domain/InitiateTransfer", lambda: domain.initiate_transfer('pybs.com', 'authcode123', contacts)),
