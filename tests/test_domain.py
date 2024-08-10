@@ -9,7 +9,7 @@ domain = Domain('testapi', 'testpass', test_mode=True)
 def run_test(test_number):
     if test_number == 1:
         print("(1) Testing Domain/Check")
-        response = domain.check_availability('pybs.com')
+        response = domain.check_availability('pybs.fr')
         print("Domain Check Status:", response.status)
         print("Domain Check Domain:", response.domain)
         print("Domain Check Minimum Registration Period:", response.minregperiod)
@@ -17,6 +17,7 @@ def run_test(test_number):
         print("Domain Check Registrar Lock Allowed:", response.registrarlockallowed)
         print("Domain Check Private WHOIS Allowed:", response.privatewhoisallowed)
         print("Domain Check Real-Time Registration:", response.realtimeregistration)
+        print("API URL:", response.url)
     elif test_number == 2:
         print("(2) Testing Domain/Create")
         contacts = {

@@ -8,29 +8,25 @@ class Domain:
         self.password = password
         self.test_mode = test_mode
         self.base_url = "https://testapi.internet.bs" if test_mode else "https://api.internet.bs"
-        self.last_request_url = None
-        self.last_request_params = None
+
         if self.test_mode:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     def _make_request(self, resource_path, params):
         url = f"{self.base_url}{resource_path}"
-        self.last_request_url = url
-        self.last_request_params = params
         params.update({
             'ApiKey': 'testapi' if self.test_mode else self.api_key,
             'Password': 'testpass' if self.test_mode else self.password,
             'ResponseFormat': 'JSON'
         })
         response = requests.get(url, params=params, verify=not self.test_mode)
+        requested_url = response.url
         response_data = response.json()
         
-        # Error handling
         if response.status_code != 200:
             error_message = response_data.get('message', 'Unknown error occurred while processing the request')
             raise Exception(f"API request failed: {error_message}")
         
-        # Special handling for Domain/Check
         if resource_path == '/Domain/Check':
             if response_data.get('status') not in ['AVAILABLE', 'UNAVAILABLE']:
                 error_message = response_data.get('message', 'Unknown error occurred while processing the request')
@@ -40,16 +36,10 @@ class Domain:
                 error_message = response_data.get('message', 'Unknown error occurred while processing the request')
                 raise Exception(f"API request failed: {error_message}")
         
-        return response_data
-
-    def get_last_request_url(self, reveal=False):
-        if self.last_request_url and self.last_request_params:
-            params = {k: v for k, v in self.last_request_params.items() if not reveal and k in ['ApiKey', 'Password']}
-            return f"{self.last_request_url}?{urllib.parse.urlencode(params)}"
-        return None
+        return response_data, requested_url
 
     def check_availability(self, domain_name):
-        response_data = self._make_request('/Domain/Check', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/Check', {'Domain': domain_name})
         return DomainCheckResult(
             transactid=response_data['transactid'],
             status=response_data['status'],
@@ -58,7 +48,8 @@ class Domain:
             maxregperiod=response_data['maxregperiod'],
             registrarlockallowed=response_data['registrarlockallowed'],
             privatewhoisallowed=response_data['privatewhoisallowed'],
-            realtimeregistration=response_data['realtimeregistration']
+            realtimeregistration=response_data['realtimeregistration'],
+            url=requested_url
         )
     
     def create_domain(self, domain_name, contacts, period="1Y", ns_list=None, transfer_auth_info=None, registrar_lock="ENABLED", auto_renew="NO", discount_code=None):
@@ -99,13 +90,15 @@ class Domain:
                 for field, value in contact_fields.items():
                     params[f"{contact_type}_{field}"] = value
         
-        response_data = self._make_request('/Domain/Create', params)
+        response_data, requested_url = self._make_request('/Domain/Create', params)
+
         return DomainCreateResult(
             transactid=response_data['transactid'],
             status=response_data['status'],
             currency=response_data['currency'],
             price=response_data['price'],
-            product=response_data['product']
+            product=response_data['product'],
+            url=requested_url
         )
     
     def update_domain(self, domain_name, contacts=None, ns_list=None, transfer_auth_info=None, registrar_lock=None, auto_renew=None):
@@ -124,15 +117,16 @@ class Domain:
                 for field, value in contact_fields.items():
                     params[f"{contact_type}_{field}"] = value
         
-        response_data = self._make_request('/Domain/Update', params)
+        response_data, requested_url = self._make_request('/Domain/Update', params)
         return DomainUpdateResult(
             transactid=response_data['transactid'],
             status=response_data['status'],
-            message=response_data.get('message', '')
+            message=response_data.get('message', ''),
+            url=requested_url
         )
     
     def get_domain_info(self, domain_name):
-        response_data = self._make_request('/Domain/Info', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/Info', {'Domain': domain_name})
         return DomainInfoResult(
             transactid=response_data['transactid'],
             status=response_data['status'],
@@ -148,16 +142,18 @@ class Domain:
             contacts=response_data['contacts'],
             transferauthinfo=response_data['transferauthinfo'],
             dnssec=response_data['dnssec'],
-            price=response_data['price']
+            price=response_data['price'],
+            url=requested_url
         )
     
     def get_registry_status(self, domain_name):
-        response_data = self._make_request('/Domain/RegistryStatus', {'Domain': domain_name})
+        response_data, requested_url = self._make_request('/Domain/RegistryStatus', {'Domain': domain_name})
         return DomainRegistryStatusResult(
             transactid=response_data['transactid'],
             domain=response_data['domain'],
             registrystatus=response_data['registrystatus'],
-            status=response_data['status']
+            status=response_data['status'],
+            url=requested_url
         )
     
     def initiate_transfer(self, domain_name, auth_code, contacts):
@@ -243,7 +239,7 @@ class Domain:
 
 
 class DomainCheckResult:
-    def __init__(self, transactid, status, domain, minregperiod, maxregperiod, registrarlockallowed, privatewhoisallowed, realtimeregistration):
+    def __init__(self, transactid, status, domain, minregperiod, maxregperiod, registrarlockallowed, privatewhoisallowed, realtimeregistration, url):
         self.transactid = transactid
         self.status = status
         self.domain = domain
@@ -252,32 +248,35 @@ class DomainCheckResult:
         self.registrarlockallowed = registrarlockallowed
         self.privatewhoisallowed = privatewhoisallowed
         self.realtimeregistration = realtimeregistration
+        self.url = url
 
     def __str__(self):
         return f"DomainCheckResult(status={self.status}, domain={self.domain})"
 
 class DomainCreateResult:
-    def __init__(self, transactid, status, currency, price, product):
+    def __init__(self, transactid, status, currency, price, product, url):
         self.transactid = transactid
         self.status = status
         self.currency = currency
         self.price = price
         self.product = product
+        self.url = url
 
     def __str__(self):
         return f"DomainCreateResult(status={self.status}, currency={self.currency}, price={self.price}, product={self.product})"
 
 class DomainUpdateResult:
-    def __init__(self, transactid, status, message):
+    def __init__(self, transactid, status, message, url):
         self.transactid = transactid
         self.status = status
         self.message = message
+        self.url = url
 
     def __str__(self):
         return f"DomainUpdateResult(status={self.status}, message={self.message})"
 
 class DomainInfoResult:
-    def __init__(self, transactid, status, domain, expirationdate, registrationdate, paiduntil, registrarlock, autorenew, privatewhois, whoisprivacy, domainstatus, contacts, transferauthinfo, dnssec, price):
+    def __init__(self, transactid, status, domain, expirationdate, registrationdate, paiduntil, registrarlock, autorenew, privatewhois, whoisprivacy, domainstatus, contacts, transferauthinfo, dnssec, price, url):
         self.transactid = transactid
         self.status = status
         self.domain = domain
@@ -293,23 +292,26 @@ class DomainInfoResult:
         self.transferauthinfo = transferauthinfo
         self.dnssec = dnssec
         self.price = price
+        self.url = url
 
     def __str__(self):
         return f"DomainInfoResult(status={self.status}, domain={self.domain})"
 
 class DomainRegistryStatusResult:
-    def __init__(self, transactid, domain, registrystatus, status):
+    def __init__(self, transactid, domain, registrystatus, status, url):
         self.transactid = transactid
         self.domain = domain
         self.registrystatus = registrystatus
         self.status = status
+        self.url = url
 
     def __str__(self):
         return f"DomainRegistryStatusResult(status={self.status}, domain={self.domain}, registrystatus={self.registrystatus})"
 
 class DomainItem:
-    def __init__(self, domain_name):
+    def __init__(self, domain_name, url):
         self.domain_name = domain_name
+        self.url = url
 
     def __str__(self):
         return f"DomainItem(domain_name={self.domain_name})"
