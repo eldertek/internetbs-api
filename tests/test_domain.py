@@ -197,9 +197,10 @@ def run_test(test_number):
         print("Message:", response.get('message', ''))
     elif test_number == 22:
         print("(22) Testing Domain/List")
-        domains = domain.list_domains()
+        domains, url = domain.list_domains()
         for domain_item in domains:
             print("Domain:", domain_item.domain_name)
+        print("API URL:", url)
     elif test_number == 23:
         print("(23) Testing Domain/Renew")
         response = domain.renew_domain('pybs.com')

@@ -218,9 +218,9 @@ class Domain:
         return self._make_request('/Domain/ChangeTag/DotUK', {'Domain': domain_name, 'NewTag': new_tag})
     
     def list_domains(self):
-        response_data = self._make_request('/Domain/List', {})
+        response_data, requested_url = self._make_request('/Domain/List', {})
         domain_names = response_data.get('domain', [])
-        return [DomainItem(domain_name) for domain_name in domain_names]
+        return [DomainItem(domain_name) for domain_name in domain_names], requested_url
     
     def renew_domain(self, domain_name, period="1Y"):
         return self._make_request('/Domain/Renew', {'Domain': domain_name, 'Period': period})
@@ -309,9 +309,8 @@ class DomainRegistryStatusResult:
         return f"DomainRegistryStatusResult(status={self.status}, domain={self.domain}, registrystatus={self.registrystatus})"
 
 class DomainItem:
-    def __init__(self, domain_name, url):
+    def __init__(self, domain_name):
         self.domain_name = domain_name
-        self.url = url
 
     def __str__(self):
         return f"DomainItem(domain_name={self.domain_name})"
