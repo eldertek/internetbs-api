@@ -217,10 +217,10 @@ class Domain:
     def change_tag_uk(self, domain_name, new_tag):
         return self._make_request('/Domain/ChangeTag/DotUK', {'Domain': domain_name, 'NewTag': new_tag})
     
-    def list_domains(self):
+    def list_domains(self, return_url=False):
         response_data, requested_url = self._make_request('/Domain/List', {})
         domain_names = response_data.get('domain', [])
-        return [DomainItem(domain_name) for domain_name in domain_names], requested_url
+        return [DomainItem(domain_name) for domain_name in domain_names], requested_url if return_url else [DomainItem(domain_name) for domain_name in domain_names]
     
     def renew_domain(self, domain_name, period="1Y"):
         return self._make_request('/Domain/Renew', {'Domain': domain_name, 'Period': period})
