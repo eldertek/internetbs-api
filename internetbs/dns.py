@@ -8,21 +8,18 @@ class DNS:
         self.password = password
         self.test_mode = test_mode
         self.base_url = "https://testapi.internet.bs" if test_mode else "https://api.internet.bs"
-        self.last_request_url = None
-        self.last_request_params = None
         if self.test_mode:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     def _make_request(self, resource_path, params):
         url = f"{self.base_url}{resource_path}"
-        self.last_request_url = url
-        self.last_request_params = params
         params.update({
             'ApiKey': 'testapi' if self.test_mode else self.api_key,
             'Password': 'testpass' if self.test_mode else self.password,
             'ResponseFormat': 'JSON'
         })
         response = requests.get(url, params=params, verify=not self.test_mode)
+        requested_url = response.url
         response_data = response.json()
         
         # Error handling
@@ -30,30 +27,26 @@ class DNS:
             error_message = response_data.get('message', 'Unknown error')
             raise Exception(f"API request failed: {error_message}")
         
-        return response_data
-
-    def get_last_request_url(self, reveal=False):
-        if self.last_request_url and self.last_request_params:
-            params = {k: v for k, v in self.last_request_params.items() if not reveal and k in ['ApiKey', 'Password']}
-            return f"{self.last_request_url}?{urllib.parse.urlencode(params)}"
-        return None
+        return response_data, requested_url
 
     def add_record(self, domain_name, record_type, value):
         params = {'FullRecordName': domain_name, 'Type': record_type, 'Value': value}
-        response_data = self._make_request('/Domain/DnsRecord/Add', params)
+        response_data, requested_url = self._make_request('/Domain/DnsRecord/Add', params)
         return DNSAddRecordResult(
             transactid=response_data['transactid'],
-            status=response_data['status']
+            status=response_data['status'],
+            url=requested_url
         )
 
     def remove_record(self, domain_name, record_type, value=None):
         params = {'FullRecordName': domain_name, 'Type': record_type}
         if value:
             params['Value'] = value
-        response_data = self._make_request('/Domain/DnsRecord/Remove', params)
+        response_data, requested_url = self._make_request('/Domain/DnsRecord/Remove', params)
         return DNSRemoveRecordResult(
             transactid=response_data['transactid'],
-            status=response_data['status']
+            status=response_data['status'],
+            url=requested_url
         )
 
     def update_record(self, domain_name, old_record_type, old_value, new_value):
@@ -63,50 +56,56 @@ class DNS:
             'CurrentValue': old_value,
             'NewValue': new_value
         }
-        response_data = self._make_request('/Domain/DnsRecord/Update', params)
+        response_data, requested_url = self._make_request('/Domain/DnsRecord/Update', params)
         return DNSUpdateRecordResult(
             transactid=response_data['transactid'],
-            status=response_data['status']
+            status=response_data['status'],
+            url=requested_url
         )
 
     def list_records(self, domain_name):
         params = {'Domain': domain_name}
-        response_data = self._make_request('/Domain/DnsRecord/List', params)
+        response_data, requested_url = self._make_request('/Domain/DnsRecord/List', params)
         return DNSListRecordsResult(
             transactid=response_data['transactid'],
             status=response_data['status'],
-            records=response_data['records']
+            records=response_data['records'],
+            url=requested_url
         )
 
 class DNSAddRecordResult:
-    def __init__(self, transactid, status):
+    def __init__(self, transactid, status, url):
         self.transactid = transactid
         self.status = status
+        self.url = url
 
     def __str__(self):
         return f"DNSAddRecordResult(status={self.status}, transactid={self.transactid})"
 
 class DNSRemoveRecordResult:
-    def __init__(self, transactid, status):
+    def __init__(self, transactid, status, url):
         self.transactid = transactid
         self.status = status
+        self.url = url
 
     def __str__(self):
         return f"DNSRemoveRecordResult(status={self.status}, transactid={self.transactid})"
 
 class DNSUpdateRecordResult:
-    def __init__(self, transactid, status):
+    def __init__(self, transactid, status, url):
         self.transactid = transactid
         self.status = status
+        self.url = url
 
     def __str__(self):
         return f"DNSUpdateRecordResult(status={self.status}, transactid={self.transactid})"
 
 class DNSListRecordsResult:
-    def __init__(self, transactid, status, records):
+    def __init__(self, transactid, status, records, url):
         self.transactid = transactid
         self.status = status
         self.records = records
+        self.url = url
 
     def __str__(self):
         return f"DNSListRecordsResult(status={self.status}, transactid={self.transactid}, records={self.records})"
