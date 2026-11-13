@@ -79,3 +79,8 @@ For detailed documentation on all available methods and their parameters, please
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 If specific functions do not work, do not hesitate to open an issue as I have not fully implemented all functions.
+
+## Commercial Support & Custom Integration
+
+Need custom features, enterprise integration, or priority support?
+Maintained by **[Eclipse Technology](https://eclipse-technology.eu)** ([contact@eclipse-technology.eu](mailto:contact@eclipse-technology.eu)).
