@@ -2,10 +2,11 @@ import requests
 import urllib.parse
 
 class Forwarding:
-    def __init__(self, api_key, password, test_mode=False):
+    def __init__(self, api_key, password, test_mode=False, timeout=30):
         self.api_key = api_key
         self.password = password
         self.test_mode = test_mode
+        self.timeout = timeout
         self.base_url = "https://testapi.internet.bs" if test_mode else "https://api.internet.bs"
         self.last_request_url = None
         self.last_request_params = None
@@ -19,12 +20,12 @@ class Forwarding:
             'Password': 'testpass' if self.test_mode else self.password,
             'ResponseFormat': 'JSON'
         })
-        response = requests.get(url, params=params, verify=not self.test_mode)
+        response = requests.get(url, params=params, verify=not self.test_mode, timeout=self.timeout)
         return response.json()
 
     def get_last_request_url(self, reveal=False):
         if self.last_request_url and self.last_request_params:
-            params = {k: v for k, v in self.last_request_params.items() if not reveal and k in ['ApiKey', 'Password']}
+            params = {k: ('***' if (not reveal and k in ('ApiKey', 'Password')) else v) for k, v in self.last_request_params.items()}
             return f"{self.last_request_url}?{urllib.parse.urlencode(params)}"
         return None
 
