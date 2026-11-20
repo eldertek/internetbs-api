@@ -3,10 +3,11 @@ import urllib3
 from .results import GenericResult, DomainCheckResult, DomainCreateResult, DomainUpdateResult, DomainInfoResult, DomainRegistryStatusResult, DomainItem
     
 class Domain:
-    def __init__(self, api_key, password, test_mode=False):
+    def __init__(self, api_key, password, test_mode=False, timeout=30):
         self.api_key = api_key
         self.password = password
         self.test_mode = test_mode
+        self.timeout = timeout
         self.base_url = "https://testapi.internet.bs" if test_mode else "https://api.internet.bs"
 
         if self.test_mode:
@@ -19,7 +20,7 @@ class Domain:
             'Password': 'testpass' if self.test_mode else self.password,
             'ResponseFormat': 'JSON'
         })
-        response = requests.get(url, params=params, verify=not self.test_mode)
+        response = requests.get(url, params=params, verify=not self.test_mode, timeout=self.timeout)
         requested_url = response.url
         response_data = response.json()
         
