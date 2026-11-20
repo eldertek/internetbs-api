@@ -28,14 +28,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install package and test tools
+      - name: Install package and test tools in isolated venv
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install requests pytest pip-audit
-          python -m pip install --no-build-isolation --no-deps -e .
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip "setuptools>=84.1.0" wheel setuptools_scm requests pytest pip-audit
+          .venv/bin/python -m pip install --no-build-isolation --no-deps -e .
 
       - name: Run unit tests
-        run: pytest tests/test_security_timeouts.py -v
+        run: .venv/bin/pytest tests/test_security_timeouts.py -v
 
       - name: Audit Python dependencies
-        run: pip-audit
+        run: .venv/bin/pip-audit --skip-editable
