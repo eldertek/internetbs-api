@@ -38,4 +38,5 @@ jobs:
         run: .venv/bin/pytest tests/test_security_timeouts.py -v
 
       - name: Audit Python dependencies
+        if: matrix.python-version == '3.12'
         run: .venv/bin/pip-audit --skip-editable
